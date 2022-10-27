@@ -1,7 +1,9 @@
-insert into users values ('u1','u1','1');
-insert into users values('u2','u2','2');
-insert into users values('u3','u3','3');
-insert into users values('s1','s1','1');
+//users take only two values, corrected on Oct.27
+
+insert into users values ('u1','Peter');
+insert into users values('u2','Adam');
+insert into users values('u3','Kevin');
+insert into users values('s1','Alex');
 
 insert into artists values('a1','a1','Wbwb','1');
 insert into artists values('a2','a2','Wbwb2','2');
