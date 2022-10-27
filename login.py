@@ -61,6 +61,27 @@ def check(id, pwd):
                 print("Error input! Please input either \"1\"or \"2\"\n")
     return user
 
+def register():
+    """ unregistered users sign up by providing uid, name, password"""
+    uid = input("Enter your user ID: ")
+    #check if user ID is unique
+    while True:
+        cursor.execute("""
+                Select name
+                FROM  users
+                WHERE uid = :id
+                """, {'id': uid})
+        data = cursor.fetchall()
+        if not data:
+            break
+        else:
+            uid = input("User ID already exists. PLease enter another user ID: ")
+    name = input("Enter your name: ")
+    #check if name is valid
+    while name.isalpha() == 0:
+        name = input("Invalid name input, please enter a valid name: ")
+    pwd = input("Enter your password: ")
+    cursor.execute('INSERT INTO users VALUES (:id,:name,:pwd)', {"id": uid, "name": name, "pwd": pwd})
 
 def main():
     """Main screen of the program, also the login screen"""
@@ -73,7 +94,7 @@ def main():
                 continue
             return user
         if option == "2":
-            print("WIP")
+            register()
             pass
         if option == "0":
             break
