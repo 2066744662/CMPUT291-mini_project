@@ -1,9 +1,9 @@
 import sqlite3
 import login
+import artist
 
 connection = None
 cursor = None
-user = None
 
 
 def connect(path):
@@ -24,28 +24,32 @@ def run_file(file):
 
 
 def main():
-    global connection, cursor, user
+    global connection, cursor
     path = "./data.db"
     connect(path)
     run_file("prj-tables.txt")  # define table
     run_file("testdata.txt")  # test
-    login.connect(connection, cursor) # load global variable to other package
+    login.connect(connection, cursor)  # load global variable to other package
     while True:
-        user = login.main() # go to login screen
+        user = login.main()  # go to login screen
         if user is None:
             # Close everything
             print("End.")
             break
         if user[0] == "users":
-            #Go to user function screen
-            print("WIP")
-            pass #if  user decides to logout
-            #break # if user decides to exit
-        elif user[0] == "artists":
-            #Go to artist function screen
+            # Go to user function screen
             print("WIP")
             pass  # if  user decides to logout
-            #break  # if user decides to exit
+            # break # if user decides to exit
+        elif user[0] == "artists":
+            # Go to artist function screen
+            artist.connect(connection, cursor, user)
+            ret = artist.main()
+            if ret == 1:
+                pass
+            else:
+                break
+    connection.close()
 
 if __name__ == "__main__":
     main()

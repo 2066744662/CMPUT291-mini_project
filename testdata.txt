@@ -1,8 +1,11 @@
-insert into users values ('u1','Peter','pt123');
-insert into users values('u2','Adam','ad123');
-insert into users values('u3','Kevin','Kv123');
-insert into users values('s1','Alex','ax123');
+insert into users values ('u1','u1','u1');
+insert into users values('u2','u2','2');
+insert into users values('u3','u3','3');
+insert into users values('s1','s1','1');
 
 insert into artists values('a1','a1','Wbwb','1');
 insert into artists values('a2','a2','Wbwb2','2');
 insert into artists values('s1','s1','Wbwb','1');
+
+insert into songs values(1,'a', 1);
+insert into perform values('a1',1)

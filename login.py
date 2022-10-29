@@ -1,5 +1,4 @@
 # Robbie Feng
-import sqlite3
 from getpass import getpass
 
 global connection, cursor
@@ -34,7 +33,8 @@ def check(id, pwd):
     cursor.execute("""
     Select uid
     FROM users u
-    WHERE u.uid = :id AND u.pwd = :pwd
+    WHERE u.uid = :id COLLATE NOCASE
+    AND u.pwd = :pwd
     """, {'id': id, 'pwd': pwd})
     data = cursor.fetchall()
     if data:
@@ -43,7 +43,8 @@ def check(id, pwd):
     cursor.execute("""
         Select aid
         FROM artists a
-        WHERE a.aid = :id AND a.pwd = :pwd
+        WHERE a.aid = :id COLLATE NOCASE
+        AND a.pwd = :pwd
         """, {'id': id, 'pwd': pwd})
     data = cursor.fetchall()
     if data and not user:
@@ -63,7 +64,7 @@ def check(id, pwd):
 
 def register():
     """ unregistered users sign up by providing uid, name, password"""
-    uid = input("Enter your user ID: ")
+    uid = input("Enter the user ID you want to register: ")
     #check if user ID is unique
     while True:
         cursor.execute("""
@@ -75,18 +76,19 @@ def register():
         if not data:
             break
         else:
-            uid = input("User ID already exists. PLease enter another user ID: ")
+            uid = input("User ID already exists. Please enter another user ID: ")
     name = input("Enter your name: ")
-    #check if name is valid
-    while name.isalpha() == 0:
+    # check if name is valid
+    while not all(x not in ["(",")","[","]", "=", "+", "-"] for x in name):
         name = input("Invalid name input, please enter a valid name: ")
     pwd = input("Enter your password: ")
     cursor.execute('INSERT INTO users VALUES (:id,:name,:pwd)', {"id": uid, "name": name, "pwd": pwd})
+    connection.commit()
 
 def main():
     """Main screen of the program, also the login screen"""
     while True:
-        option = input("Welcome!\nChoose 1 to login, 2 to register a user, 3 if you forget your password, 0 to exit: ")
+        option = input("Welcome!\nChoose 1 to login, 2 to register a user, 0 to exit: ")
         if option == "1":
             user = login()
             if user is None:
@@ -98,5 +100,3 @@ def main():
             pass
         if option == "0":
             break
-        if option == "3":
-            print("So sad. But you can register a new account :).")
