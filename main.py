@@ -38,7 +38,7 @@ def main():
             break
         if user[0] == "users":
             # Go to user function screen
-            print("WIP")
+            userfunctions.menu(user[1])
             pass  # if  user decides to logout
             # break # if user decides to exit
         elif user[0] == "artists":
