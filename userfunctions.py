@@ -21,7 +21,7 @@ def start_session(uid):
             sno = random.randint(10000, 100000)
     current = time.strftime('%Y-%m-%d', time.localtime())
     login.cursor.execute('INSERT INTO sessions VALUES (:id,:sno,:start,:end)',
-                         {"id": 'u1', "sno": sno, "start": current, "end": None})
+                         {"id": uid, "sno": sno, "start": current, "end": None})
     print("Your session has been started !\nSession number: %d\nStart date:%s" % (sno, current))
 
 
