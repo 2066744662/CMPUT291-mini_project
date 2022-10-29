@@ -8,6 +8,7 @@ from getpass import getpass
 
 def start_session(uid):
     sno = random.randint(10000, 100000)
+    #make sure session number to be unique
     while True:
         login.cursor.execute("""
                 Select sno
@@ -19,9 +20,11 @@ def start_session(uid):
             break
         else:
             sno = random.randint(10000, 100000)
+    #get current time as start date
     current = time.strftime('%Y-%m-%d', time.localtime())
     login.cursor.execute('INSERT INTO sessions VALUES (:id,:sno,:start,:end)',
                          {"id": uid, "sno": sno, "start": current, "end": None})
+    #current session info
     print("Your session has been started !\nSession number: %d\nStart date:%s" % (sno, current))
 
 
