@@ -34,9 +34,14 @@ def add():
             print("Error. Duration cannot be less than 1.")
             title_valid = True
         elif check(title, duration):
-            print("Error. You have already uploaded a song with same title and duration!")
-            mode = input("Input 1 if you want to re-enter song details, input anything else if you want to exit.")
-            if mode != "1":
+            print("You have already uploaded a song with same title and duration!")
+            mode = input("Input 1 if you want to re-enter song details, input 2 if you still wants to add it as a new "
+                         "song, input anything else if you want to reject it:")
+            if mode == "1":
+                continue
+            elif mode == "2":
+                break
+            else:
                 return
         else:
             break
@@ -82,6 +87,34 @@ def create_sid():
         if not cursor.fetchall():
             return sid
 
+def find_top_fans():
+    """Find top fans and playlists."""
+    global connection, cursor, aid
+    cursor.execute(
+        """
+        SELECT u.uid, SUM(l.cnt) * so.duration
+        FROM users u, sessions se, listen l, songs so, perform p
+        WHERE u.uid = se.uid 
+        AND se.sno = l.sno 
+        AND u.uid = l.uid
+        AND l.sid = p.sid 
+        AND p.aid = :aid
+        AND l.sid = so.sid
+        GROUP BY u.uid
+        ORDER BY SUM(l.cnt) * so.duration DESC
+        LIMIT 3;
+        """, {"aid": aid}
+    )
+    rows = cursor.fetchall()
+    if not rows:
+        print("Sorry, no users have listen to your songs.")
+        return
+    print("Id of top 3 users who listen to your songs the longest time are:", end=" ")
+    for row in rows:
+        print(row[0], end=" | ")
+    print("")
+
+
 
 def main():
     global connection, cursor, aid
@@ -92,7 +125,7 @@ def main():
         if mode == "1":
             add()
         elif mode == "2":
-            pass
+            find_top_fans()
         elif mode == "3":
             return 1
         else:
