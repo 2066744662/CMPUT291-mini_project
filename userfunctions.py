@@ -27,6 +27,38 @@ def start_session(uid):
     #current session info
     print("Your session has been started !\nSession number: %d\nStart date:%s" % (sno, current))
 
+def search_ps(uid):
+    keywords = []
+    index = 0
+    while True:
+        keywords.append(input("Please enter the keyword you would like to search: "))
+        c = input("Continue? Y/N\n")
+        index += 1
+        if c == 'Y':
+            continue
+        else:
+            data = []
+            # search songs and playlists with keywords
+            for i in range(0, index):
+                login.cursor.execute(
+                    """ SELECT sid,title,duration FROM songs WHERE title LIKE ? UNION SELECT p.pid,p.title,SUM(s.duration) FROM playlists p,plinclude pl,songs s WHERE p.pid=pl.pid AND pl.sid=s.sid AND p.title LIKE ?;""",
+                    ('%' + keywords[i] + '%', '%' + keywords[i] + '%',))
+                data += login.cursor.fetchall()
+            # deal with duplicates
+            new_data = []
+            for info in data:
+                amounts = 0
+                for k in keywords:
+                    if k in info[i]:
+                        amounts += 1
+                if info not in new_data:
+                    new_data.append(info)
+            # sorted by amount of keywords contained
+            new_data.sort(key=takeSecond, reverse=True)
+            for i in range(0, 5):
+                print(new_data[i])
+            break
+            
 
 def menu(uid):
     """Main screen of the program, also the login screen"""
@@ -36,7 +68,7 @@ def menu(uid):
         if option == "1":
             start_session(uid)
         if option == "2":
-            pass
+            search_ps(uid)
         if option == "0":
             pass
         if option == "3":
