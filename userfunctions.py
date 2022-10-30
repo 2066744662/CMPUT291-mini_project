@@ -26,20 +26,15 @@ def start_session(uid):
                          {"id": uid, "sno": sno, "start": current, "end": None})
     #current session info
     print("Your session has been started !\nSession number: %d\nStart date:%s" % (sno, current))
-    return sno
 
 
 def menu(uid):
     """Main screen of the program, also the login screen"""
-    sno = None
     while True:
         option = input(
             "Hi Dear user. \nSelect \n1.Start a session\n2.Search for songs or playlists\n3.Search for artists\n4.End current session\n")
         if option == "1":
-            if sno is None:
-                sno = start_session(uid)
-            else:
-                print("You already have a session. You need to end it before create a new session!")
+            start_session(uid)
         if option == "2":
             pass
         if option == "0":
