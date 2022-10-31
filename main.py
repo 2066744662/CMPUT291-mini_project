@@ -1,6 +1,7 @@
 import sqlite3
 import login
 import artist
+import userfunctions
 
 connection = None
 cursor = None
@@ -22,19 +23,24 @@ def run_file(file):
         script = f.read()
     cursor.executescript(script)
 
-
-def main():
+def create_test():
     global connection, cursor
     path = "./data.db"
     connect(path)
     run_file("prj-tables.txt")  # define table
     run_file("testdata.txt")  # test
+    print("Remember to delete this")
+
+def main():
+    global connection, cursor
+    #path = input("Input .db path: ")
+    #connect(path)
+    create_test()# delete me
     login.connect(connection, cursor)  # load global variable to other package
     while True:
         user = login.main()  # go to login screen
         if user is None:
             # Close everything
-            print("End.")
             break
         if user[0] == "users":
             # Go to user function screen
@@ -50,6 +56,7 @@ def main():
             else:
                 break
     connection.close()
+    print("End.")
 
 if __name__ == "__main__":
     main()
