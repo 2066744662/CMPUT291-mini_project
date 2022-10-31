@@ -88,11 +88,11 @@ def create_sid():
             return sid
 
 def find_top_fans():
-    """Find top fans and playlists."""
+    """Find top fans and print result."""
     global connection, cursor, aid
     cursor.execute(
         """
-        SELECT u.uid, SUM(l.cnt) * so.duration
+        SELECT u.uid, substr(u.name, 0, 5), SUM(l.cnt * so.duration) as total_t
         FROM users u, sessions se, listen l, songs so, perform p
         WHERE u.uid = se.uid 
         AND se.sno = l.sno 
@@ -101,20 +101,46 @@ def find_top_fans():
         AND p.aid = :aid
         AND l.sid = so.sid
         GROUP BY u.uid
-        ORDER BY SUM(l.cnt) * so.duration DESC
+        ORDER BY total_t DESC
+        LIMIT 3;
+        """, {"aid": aid}
+    )
+    rows = cursor.fetchall()
+    print("-------------------------------------------------------------")
+    if not rows:
+        print("Sorry, no users have listen to your songs.")
+        return
+    print("Top 3 users who listen to your songs the longest time are:")
+    for row in rows:
+        print(row[0], end =": ")
+        print(row[1], end="** | ")
+    print("\n")
+
+def find_top_playlists():
+    """Find top playlists and print result."""
+    global cursor, aid
+    cursor.execute(
+        """
+        SELECT pl.pid, pl.title, COUNT(*) as c
+        FROM playlists pl, plinclude pi,  perform p
+        WHERE pl.pid = pi.pid 
+        AND pi.sid = p.sid
+        AND p.aid = :aid
+        GROUP BY pl.pid, p.aid
+        ORDER BY c DESC
         LIMIT 3;
         """, {"aid": aid}
     )
     rows = cursor.fetchall()
     if not rows:
-        print("Sorry, no users have listen to your songs.")
+        print("Sorry, no playlists contain your songs.")
+        print("\n-------------------------------------------------------------")
         return
-    print("Id of top 3 users who listen to your songs the longest time are:", end=" ")
+    print("Top 3 playlists contain most of your songs are:")
     for row in rows:
-        print(row[0], end=" | ")
-    print("")
-
-
+        print(row[0], end=": ")
+        print(row[1], end=" | ")
+    print("\n-------------------------------------------------------------")
 
 def main():
     global connection, cursor, aid
@@ -126,6 +152,7 @@ def main():
             add()
         elif mode == "2":
             find_top_fans()
+            find_top_playlists()
         elif mode == "3":
             return 1
         else:
