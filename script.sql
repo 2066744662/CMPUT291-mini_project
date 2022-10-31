@@ -1,4 +1,5 @@
 SELECT "Top 3 users";
+
 SELECT u.uid, SUM(l.cnt* so.duration) as s
 FROM users u, sessions se, listen l, songs so, perform p
 WHERE u.uid = se.uid 
@@ -10,7 +11,9 @@ AND l.sid = so.sid
 GROUP BY u.uid
 ORDER BY  s DESC
 LIMIT 3;
+
 SELECT "Top 3 playlists";
+
 SELECT pl.pid, pl.title, COUNT(*) as c
 FROM playlists pl, plinclude pi,  perform p
 WHERE pl.pid = pi.pid 
