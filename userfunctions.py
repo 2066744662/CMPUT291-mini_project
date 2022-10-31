@@ -30,6 +30,7 @@ def start_session(uid):
 def search_ps(uid):
     keywords = []
     index = 0
+    new_data = []
     while True:
         keywords.append(input("Please enter the keyword you would like to search: "))
         c = input("Continue? Y/N\n")
@@ -45,23 +46,47 @@ def search_ps(uid):
                     ('%' + keywords[i] + '%', '%' + keywords[i] + '%',))
                 data += login.cursor.fetchall()
             # deal with duplicates
-            new_data = []
             for info in data:
-                amounts = 0
-                for k in keywords:
-                    if k in info[i]:
-                        amounts += 1
-                if info not in new_data:
-                    new_data.append(info)
+                if [info, 1] not in new_data:
+                    new_data.append([info, 1])
+                elif [info, 1] in new_data:
+                    for i in new_data:
+                        if i[0] == info:
+                            i[1] += 1
             # sorted by amount of keywords contained
             new_data.sort(key=takeSecond, reverse=True)
             for i in range(0, 5):
-                print(new_data[i])
+                if new_data[i][0][0].find('s'):
+                    print(i+1, ". playlist", new_data[i][0])
+                else:
+                    print(i + 1, ". song", new_data[i][0])
             break
+    page = 5
+    while True:
+        selection = input("Please select one of the songs/playlists or enter r to see the next page of results: ")
+        if selection == 'r' and page < len(new_data):
+            # 5 results per page
+            end = page+5 if page+5 < len(new_data) else len(new_data)-1
+            for i in range(page, end):
+                # category
+                if new_data[i][0][0].find('s'):
+                    print(i + 1, ". playlist", new_data[i][0])
+                else:
+                    print(i + 1, ". song", new_data[i][0])
+            page += 5
+            continue
+        elif selection == 'r' and page > len(new_data):
+            print("All results have been shown. ")
+            continue
+        else:
+            # songs actions
+            break
+
 
 def search_a(uid):
     keywords = []
     index = 0
+    new_data = []
     while True:
         keywords.append(input("Please enter the keyword you would like to search: "))
         c = input("Continue? Y/N\n")
@@ -73,33 +98,51 @@ def search_a(uid):
             # search songs and playlists with keywords
             for i in range(0, index):
                 login.cursor.execute(
-                    """SELECT a.name,a.nationality,COUNT(p2.sid) AS c FROM artists a,perform p1, perform p2,songs s WHERE s.title LIKE ? AND p1.sid=s.sid AND a.aid=p1.aid AND p2.aid=p1.aid;""",
-                    ('%' + keywords[i] + '%',))
-                if login.cursor.fetchall()[0] is not None:
-                    data += login.cursor.fetchall()
-                login.cursor.execute(
-                    """SELECT a.name,a.nationality,COUNT(p.sid) AS c FROM artists a,perform p WHERE a.name LIKE ? AND p.aid=a.aid;""",
-                    ('%' + keywords[i] + '%',))
-                if login.cursor.fetchall()[0] is not None:
-                    data += login.cursor.fetchall()
+                    """SELECT a.name,a.nationality,COUNT(p2.sid) AS c FROM artists a,perform p1, perform p2,songs s WHERE s.title LIKE ? AND p1.sid=s.sid AND a.aid=p1.aid AND p2.aid=p1.aid UNION SELECT a.name,a.nationality,COUNT(p.sid) AS c FROM artists a,perform p WHERE a.name LIKE ? AND p.aid=a.aid;""",
+                    ('%' + keywords[i] + '%', '%' + keywords[i] + '%',))
+                data += login.cursor.fetchall()
             # deal with duplicates
-            new_data = []
             for info in data:
-                amounts = 0
-                for k in keywords:
-                    if k in info[1]:
-                        amounts += 1
-                if info not in new_data:
-                    new_data.append([info, amounts])
-                else:
-                    for j in new_data:
-                        if j[0] == info:
-                            j[1] += 1
+                if [info, 1] not in new_data and info[0] is not None:
+                    new_data.append([info, 1])
+                # update amount of keywords matched
+                elif [info, 1] in new_data:
+                    for i in new_data:
+                        if i[0] == info:
+                            i[1] += 1
             # sorted by amount of keywords contained
             new_data.sort(key=takeSecond, reverse=True)
             for i in range(0, 5):
                 print(new_data[i][0])
             break
+    page = 5
+    songs = []
+    while True:
+        selection = input("Please select one of the artists or enter r to see the next page of results: ")
+        if selection == 'r' and page < len(new_data):
+            # 5 results per page
+            end = page + 5 if page + 5 < len(new_data) else len(new_data) - 1
+            for i in range(page, end):
+                print(new_data[i][0])
+            page += 5
+            continue
+        elif selection == 'r' and page > len(new_data):
+            print("All results have been shown. ")
+            continue
+        else:
+            n = int(selection)
+            name = new_data[n-1][0]
+            login.cursor.execute(
+                """SELECT s.sid,s.title,s.duration FROM songs s, artists a,perform p WHERE a.name = ? AND p.aid=a.aid AND p.sid=s.sid;""",
+                (name,))
+            songs = login.cursor.fetchall()
+            for i in range(0,len(songs)):
+                print(i+1, ". ", songs[i])
+            while True:
+                song_select = input("Please select one of the songs: ")
+                # song actions
+            break
+
 
 def menu(uid):
     """Main screen of the program, also the login screen"""
