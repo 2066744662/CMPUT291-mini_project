@@ -47,7 +47,7 @@ def search_ps(uid):
                 data += login.cursor.fetchall()
             # deal with duplicates
             for info in data:
-                if [info, 1] not in new_data:
+                if [info, 1] not in new_data and info[0] is not None:
                     new_data.append([info, 1])
                 elif [info, 1] in new_data:
                     for i in new_data:
@@ -55,20 +55,23 @@ def search_ps(uid):
                             i[1] += 1
             # sorted by amount of keywords contained
             new_data.sort(key=takeSecond, reverse=True)
-            for i in range(0, 5):
-                if new_data[i][0][0].find('s'):
-                    print(i+1, ". playlist", new_data[i][0])
-                else:
-                    print(i + 1, ". song", new_data[i][0])
+            if new_data[0] is not None:
+                for i in range(0, 5):
+                    if new_data[i][0][0].find('s'):
+                        print(i+1, ". playlist", new_data[i][0])
+                    else:
+                        print(i + 1, ". song", new_data[i][0])
+            else:
+                print("No results found. Please search another keyword.")
+                new_data = []
+                continue
             break
     page = 5
     while True:
         selection = input("Please select one of the songs/playlists or enter r to see the next page of results: ")
         if selection == 'r' and page < len(new_data):
-            # 5 results per page
             end = page+5 if page+5 < len(new_data) else len(new_data)-1
             for i in range(page, end):
-                # category
                 if new_data[i][0][0].find('s'):
                     print(i + 1, ". playlist", new_data[i][0])
                 else:
@@ -80,6 +83,11 @@ def search_ps(uid):
             continue
         else:
             # songs actions
+            id = new_data[int(selection)][0]
+            if id[0][0] == 's':
+                songactions.menu(uid, id[0], session)
+            else:
+                pass
             break
 
 
@@ -120,7 +128,6 @@ def search_a(uid):
     while True:
         selection = input("Please select one of the artists or enter r to see the next page of results: ")
         if selection == 'r' and page < len(new_data):
-            # 5 results per page
             end = page + 5 if page + 5 < len(new_data) else len(new_data) - 1
             for i in range(page, end):
                 print(new_data[i][0])
@@ -142,6 +149,12 @@ def search_a(uid):
                 song_select = input("Please select one of the songs: ")
                 # song actions
             break
+          
+    def end_session(uid):
+        current = time.strftime('%Y-%m-%d', time.localtime())
+        login.cursor.execute('UPDATE sessions SET end = ? WHERE uid = ?', {current, uid, })
+        print("Your session has been successfully ended. ")
+        return 0
 
 
 def menu(uid):
