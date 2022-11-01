@@ -149,12 +149,11 @@ def search_a(uid):
                 song_select = input("Please select one of the songs: ")
                 # song actions
             break
-          
-    def end_session(uid):
-        current = time.strftime('%Y-%m-%d', time.localtime())
-        login.cursor.execute('UPDATE sessions SET end = ? WHERE uid = ?', {current, uid, })
-        print("Your session has been successfully ended. ")
-        return 0
+def end_session(uid):
+    current = time.strftime('%Y-%m-%d', time.localtime())
+    login.cursor.execute('UPDATE sessions SET end = ? WHERE uid = ?', {current, uid, })
+    print("Your session has been successfully ended. ")
+    return 0
 
 
 def menu(uid):
