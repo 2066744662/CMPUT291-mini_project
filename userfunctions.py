@@ -167,10 +167,10 @@ def menu(uid):
         option = input(
             "Hi Dear user. \nSelect \n1.Start a session\n2.Search for songs or playlists\n3.Search for artists\n4.End current session\n")
         if option == "1":
-            start_session(uid)
+            session = start_session(uid)
         if option == "2":
             search_ps(uid)
-        if option == "0":
-            pass
         if option == "3":
-            pass
+            search_a(uid)
+        if option == "4":
+            session = end_session(uid)
