@@ -83,11 +83,11 @@ def search_ps(uid):
             continue
         else:
             # songs actions
-            id = new_data[int(selection)][0]
+            id = new_data[int(selection)-1][0]
             if id[0][0] == 's':
                 songactions.menu(uid, id[0], session)
-            else:
-                pass
+            elif id[0][0] == 'p':
+                playlistactions.showInfo(uid, session, id[0])
             break
 
 
@@ -148,7 +148,11 @@ def search_a(uid):
             while True:
                 song_select = input("Please select one of the songs: ")
                 # song actions
-            break
+                id = new_data[int(song_select) - 1][0]
+                songactions.menu(uid, id[0], session)
+                break
+               
+            
 def end_session(uid):
     current = time.strftime('%Y-%m-%d', time.localtime())
     login.cursor.execute('UPDATE sessions SET end = ? WHERE uid = ?', {current, uid, })
