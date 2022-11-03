@@ -23,6 +23,8 @@ def run_file(file):
         script = f.read()
     cursor.executescript(script)
 
+
+
 def create_test():
     global connection, cursor
     path = "./data.db"
@@ -33,9 +35,9 @@ def create_test():
 
 def main():
     global connection, cursor
-    #path = input("Input .db path: ")
-    #connect(path)
-    create_test()# delete me
+    path = input("Input .db path: ")
+    connect(path)
+    #create_test()# delete me
     login.connect(connection, cursor)  # load global variable to other package
     while True:
         user = login.main()  # go to login screen

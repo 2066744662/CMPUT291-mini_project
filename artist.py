@@ -1,3 +1,4 @@
+#Ribbie Feng
 import random
 
 global connection, cursor, aid
@@ -17,7 +18,6 @@ def add():
             :return: user/artist and id
             """
     # prompt for info
-    global connection, cursor, aid
     title_valid = False
     while True:
         if not title_valid:
@@ -58,7 +58,37 @@ def add():
         """, {"s": sid, "a": aid}
     )
     connection.commit()
-    print("Success\n")
+    print("Success.")
+    # Prompt for other artists
+    while True:
+        print("Are there any other artists who has performed this song?\nEnter his/her artist id or enter \':e\' if no.")
+        aid2 = input("Please enter one id at a time: ")
+        if aid2 == ":e":
+            connection.commit()
+            print("") # Just for good looking
+            return
+        if aid2 == aid:
+            print("This is you!")
+        else:
+            # check if artist exit
+            cursor.execute("""
+            SELECT *
+            FROM artists a 
+            WHERE a.aid = :aid
+            """, {"aid": aid2})
+            data = cursor.fetchall()
+            if not data:
+                print("Cannot find this artist.")
+                continue
+            else:
+                cursor.execute(
+                    """
+                    Insert Into perform Values (:a, :s)
+                    """, {"s": sid, "a": aid2}
+                )
+                print("Success.")
+
+
 
 def check(title, duration):
     """Check if title and duration already exist in db.
