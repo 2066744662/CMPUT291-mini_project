@@ -41,19 +41,18 @@ def seeInfo(sid):
         """SELECT p.title FROM artists a,songs s,playlists p, plinclude pl,perform pf WHERE s.sid=:sid AND pf.sid=s.sid AND pf.aid=a.aid AND pl.sid=s.sid AND p.pid=pl.pid""",
         {"sid": sid})
     info = login.cursor.fetchall()
+    if not info:
+        return
     print("The song is in following playlists:")
-    if info:
-        for i in info:
-            print(i[0], end="  ")
-        print("")
-    else:
-        print("None")
+    for i in info:
+        print(i[0], end="  ")
+    print("")
 
-order = [1] * 10000
+
 
 
 def createPlaylist(uid):
-    pid = random.randint(1000, 10000)
+    pid = random.randint(1, 100000000)
     title = input("Please enter the title of new playlist: ")
     login.cursor.execute("""INSERT INTO playlists VALUES (:pid,:title,:uid)""",
                          {"pid": pid, "title": title, "uid": uid})
@@ -62,23 +61,65 @@ def createPlaylist(uid):
 
 
 def addToPlaylist(uid, sid):
-    pid = createPlaylist(uid)
+    login.cursor.execute("""
+        SELECT pl.title, pl.pid
+        FROM playlists pl
+        WHERE pl.uid = :uid
+    """, {"uid":uid})
+    rows = login.cursor.fetchall()
+    if rows:
+        mode = input("Input 1 to add the song to your existing playlist, input else to add it to new playlist")
+        if mode == "1":
+            print('─' * 25)
+            for i in range(len(rows)):
+                print(str(i)+": " + rows[i][0]+" id: "+str(rows[i][1]))
+            print('─' * 25)
+            while True:
+                mode = input("Enter the index of the playlist you want to add the song to:")
+                try:
+                    mode = int(mode)
+                except ValueError:
+                    print("Please enter a number")
+                    continue
+                if 0 <= mode < len(rows):
+                    pid = rows[mode][1]
+                    break
+        else:
+            pid = createPlaylist(uid)
+    login.cursor.execute("""
+    SELECT max(sorder)+1
+    FROM plinclude
+    WHERE pid = :pid
+    """,{"pid": pid})
+    data = login.cursor.fetchall()
+    if data and data[0][0] is not None:
+        order = data[0][0]
+    else:
+        order = 1
+    login.cursor.execute("""
+        SELECT *
+        FROM plinclude
+        WHERE pid = :pid AND sid = :sid
+    """, {"pid": pid, "sid": sid})
+    data = login.cursor.fetchall()
+    if data:
+        print("The song is already in this playlist")
+        return
     login.cursor.execute("""INSERT INTO plinclude VALUES (:pid,:sid,:sorder)""",
-                         {"pid": pid, "sid": sid, "sorder": order[pid]})
+                         {"pid": pid, "sid": sid, "sorder": order})
     login.connection.commit()
-    order[pid] += 1
 
 
-def menu(uid, id, sno):
+def menu(uid, sid, sno):
     while True:
         selection = input(
             "Please select one of the following actions: \n1. Listen to current song\n2. See more information about current song\n3. Add current song to a playlist\nElse to exit\n")
         if selection == '1':
-            listen(uid, id, sno)
+            listen(uid, sid, sno)
         elif selection == '2':
-            seeInfo(id)
+            seeInfo(sid)
         elif selection == '3':
-            addToPlaylist(uid, id)
+            addToPlaylist(uid, sid)
         else:
             break
     print("Back to search page...")

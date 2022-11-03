@@ -3,6 +3,7 @@ import login
 import sqlite3
 
 
+
 def showInfo(uid, sno, pid):
     login.cursor.execute(
         """SELECT s.sid,s.title,s.duration FROM songs s, playlists p, plinclude pl WHERE p.pid=:pid AND pl.pid=p.pid AND s.sid=pl.sid""",

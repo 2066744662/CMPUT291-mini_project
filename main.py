@@ -44,9 +44,11 @@ def main():
             break
         if user[0] == "users":
             # Go to user function screen
-            userfunctions.menu(user[1])
-            pass  # if  user decides to logout
-            # break # if user decides to exit
+            ret = userfunctions.menu(user[1])
+            if ret == 1:
+                pass
+            else:
+                break
         elif user[0] == "artists":
             # Go to artist function screen
             artist.connect(connection, cursor, user)
@@ -56,7 +58,6 @@ def main():
             else:
                 break
     connection.close()
-    print("End.")
 
 if __name__ == "__main__":
     main()
