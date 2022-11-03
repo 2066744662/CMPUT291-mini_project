@@ -203,7 +203,7 @@ def choose_song_from_artist(uid, aid):
         try:
             prompt = int(prompt)
         except ValueError:
-            print("Plase enter a number")
+            print("Please enter a number.")
             continue
         if 0 < prompt < len(rows):
             songactions.menu(uid, rows[prompt-1][0], sno)

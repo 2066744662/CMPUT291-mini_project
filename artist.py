@@ -1,4 +1,4 @@
-#Ribbie Feng
+# Robbie Feng
 import random
 
 global connection, cursor, aid
@@ -13,10 +13,7 @@ def connect(connection1, cursor1, user1):
 
 
 def add():
-    """Add a song to database, prompy user for song info
-            :rtype: tuple
-            :return: user/artist and id
-            """
+    """Add a song to database, prompt user for song info"""
     # prompt for info
     title_valid = False
     while True:

@@ -32,10 +32,11 @@ def create_test():
     run_file("prj-tables.txt")  # define table
     run_file("testdata.txt")  # test
     print("This is a test!")
+
 def main():
     global connection, cursor
     path = input("Input .db path: ")
-    if path =="11":
+    if path =="11##??":
         create_test()
     else:
         connect(path)
@@ -60,7 +61,8 @@ def main():
                 pass
             else:
                 break
-    connection.close()
 
 if __name__ == "__main__":
     main()
+    connection.close()
+    print("Program is now closed")
