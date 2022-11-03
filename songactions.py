@@ -52,8 +52,15 @@ def seeInfo(sid):
 
 
 def createPlaylist(uid):
-    pid = random.randint(1, 100000000)
     title = input("Please enter the title of new playlist: ")
+    # Create unique pid
+    while True:
+        pid = random.randint(1, 100000000)
+        login.cursor.execute("""
+        SELECT * FROM playlists WHERE pid = :pid""", {"pid": pid})
+        data = login.cursor.fetchall()
+        if not data:
+            break
     login.cursor.execute("""INSERT INTO playlists VALUES (:pid,:title,:uid)""",
                          {"pid": pid, "title": title, "uid": uid})
     login.connection.commit()

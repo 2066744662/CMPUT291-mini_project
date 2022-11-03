@@ -211,6 +211,9 @@ def choose_song_from_artist(uid, aid):
 
 def end_session(uid):
     global sno
+    if sno is None:
+        print("You don't have a session currently.")
+        return
     current = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
     login.cursor.execute('UPDATE sessions SET end = ? WHERE uid = ? and sno = ?', (current, uid, sno))
     login.connection.commit()
