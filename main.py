@@ -31,13 +31,14 @@ def create_test():
     connect(path)
     run_file("prj-tables.txt")  # define table
     run_file("testdata.txt")  # test
-    print("Remember to delete this")
-
+    print("This is a test!")
 def main():
     global connection, cursor
     path = input("Input .db path: ")
-    connect(path)
-    #create_test()# delete me
+    if path =="11":
+        create_test()
+    else:
+        connect(path)
     login.connect(connection, cursor)  # load global variable to other package
     while True:
         user = login.main()  # go to login screen
